@@ -33,7 +33,7 @@ provides an authenticated, role-separated loopback live transport.
 | --- | --- | --- |
 | `index.html` | HTML shell and browser security policy | CSP and no-referrer policy |
 | `src/main.jsx` | React root | Strict Mode enabled |
-| `src/App.jsx` | Router setup | Catch-all route supports arbitrary static paths |
+| `src/App.jsx` | Router setup | Catch-all route; basename follows Vite `base` |
 | `src/TraceViewer.jsx` | Loading, async compilation state, playback composition, and presenter interactions | Presenter and renderer implementations extracted |
 | `src/ErrorBoundary.jsx` | Application and renderer failure isolation | Prevents blank-screen failures |
 | `src/core/trace.js` | Version 2 validation, table expansion, and complexity limits | Shares one object per distinct frame across steps |
@@ -58,7 +58,7 @@ provides an authenticated, role-separated loopback live transport.
 | `src/index.css` | Complete viewer styling | Fixed-width desktop layout |
 | `src/App.css` | Root spacing | Vite-template residue |
 | `public/var/traces/*.json` | Generated snapshots | Only `presentations.example.json` is tracked |
-| `vite.config.js` | Build configuration | Production base is repository-specific |
+| `vite.config.js` | Build configuration | Production base is `./`; Pages builds pass `--base /<repo>/` |
 | `eslint.config.js` | JavaScript and React lint rules | Lint passes |
 | `dist/` | Generated production bundle | Local build output; gitignored |
 | `producer/` | Installable Python capture and authoring package | Unified producer source of truth |

@@ -19,7 +19,8 @@ import Timeline from './presenter/Timeline';
 import FontControl from './FontControl';
 import ThemeControl from './ThemeControl';
 import VirtualizedSource from './VirtualizedSource';
-import { displayNameForTrace, loadStepComment, resolveSnapshotUrl } from './openTrace';
+import { BUNDLED_EXAMPLE_TRACE, displayNameForTrace, loadStepComment, resolveSnapshotUrl } from './openTrace';
+import { resolvePublicAssetUrl } from './publicUrl';
 import { exportPresentationPdf } from './exportPdf';
 import PrintSpeakerNotes from './presenter/PrintSpeakerNotes';
 
@@ -455,7 +456,7 @@ function ShortcutHelp({ onClose }) {
 }
 
 const LANDING_EXAMPLES = [
-  ["Minimal example", "/var/traces/presentations.example.json"],
+  ["Minimal example", BUNDLED_EXAMPLE_TRACE],
 ];
 
 function LandingScreen({ navigate }) {
@@ -465,7 +466,7 @@ function LandingScreen({ navigate }) {
     Promise.all(
       LANDING_EXAMPLES.map(async (entry) => {
         try {
-          const response = await fetch(entry[1], { method: 'HEAD' });
+          const response = await fetch(resolvePublicAssetUrl(entry[1]), { method: 'HEAD' });
           return response.ok ? entry : null;
         } catch {
           return null;

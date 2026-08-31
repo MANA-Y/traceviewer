@@ -49,6 +49,7 @@ test("builds snapshot hrefs and display names", () => {
   assert.equal(displayNameForTrace("/var/traces/talk.json"), "talk");
   assert.equal(displayNameForTrace(LOCAL_TRACE_ID, "talk.json"), "talk.json");
   assert.equal(resolveSnapshotUrl("/talk.json"), "/talk.json");
+  assert.equal(resolveSnapshotUrl("https://example.com/talk.json"), "https://example.com/talk.json");
   assert.equal(resolveSnapshotUrl(LOCAL_TRACE_ID), null);
 });
 

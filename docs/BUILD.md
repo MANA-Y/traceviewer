@@ -172,6 +172,9 @@ not required to author or present.
 `benchmark:large` generates a 100,000-step fixture in memory and fails if
 compiled playback exceeds a provisional 200 MB heap budget.
 
+Pushes to `main` deploy the production viewer and bundled example to
+[GitHub Pages](https://mana-y.github.io/traceviewer/).
+
 ## Common failures
 
 | Symptom | Fix |

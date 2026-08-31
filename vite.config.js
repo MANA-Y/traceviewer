@@ -2,6 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig(({ command }) => ({
+  // Portable packs use a relative base. GitHub Pages overrides this with
+  // `vite build --base /<repo>/`.
   base: command === 'build' ? './' : '/',
   plugins: [react()],
   build: {

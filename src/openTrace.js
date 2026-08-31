@@ -1,4 +1,7 @@
+import { resolvePublicAssetUrl } from './publicUrl.js';
+
 export const LOCAL_TRACE_ID = 'local';
+export const BUNDLED_EXAMPLE_TRACE = '/var/traces/presentations.example.json';
 export const RECENT_TRACES_KEY = 'traceviewer-recent-traces';
 export const STEP_COMMENTS_KEY = 'traceviewer-step-comments';
 export const MAX_RECENT_TRACES = 6;
@@ -29,7 +32,7 @@ export function peekLocalTrace() {
 
 export function resolveSnapshotUrl(tracePath) {
   if (tracePath === LOCAL_TRACE_ID) return peekLocalTrace()?.url ?? null;
-  return tracePath;
+  return resolvePublicAssetUrl(tracePath);
 }
 
 export function localTraceHref(meta) {

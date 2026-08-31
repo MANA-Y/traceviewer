@@ -3,6 +3,9 @@
 Code-first slides for technical talks. Write a small Python program, save it,
 and reveal the talk one step at a time in a browser. No separate slide deck.
 
+[Live demo](https://mana-y.github.io/traceviewer/?trace=/var/traces/presentations.example.json&animate=1)
+· [Landing page](https://mana-y.github.io/traceviewer/)
+
 ![Stepping through the bundled example](docs/images/playback.gif)
 
 <p align="center">
