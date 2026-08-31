@@ -1,0 +1,17 @@
+#root {
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+#root:has(.landing-screen),
+#root:has(.status-screen) {
+  padding: 0;
+}
+
+#root:has(.presentation-mode) {
+  padding: 0;
+}
+
+#root:has(.source-mode) {
+  padding: 0.5rem 0.75rem 0;
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://traceviewer.dev/schema/trace-event-v1.json",
+  "title": "Trace Viewer live event",
+  "type": "object",
+  "required": ["protocolVersion", "type", "sessionId", "sequence", "revision", "payload"],
+  "properties": {
+    "protocolVersion": { "const": 1 },
+    "type": {
+      "enum": ["hello", "trace_snapshot", "execution_reset", "step_append", "diagnostic", "presentation_state", "complete", "error"]
+    },
+    "sessionId": { "type": "string", "minLength": 1 },
+    "sequence": { "type": "integer", "minimum": 0 },
+    "revision": { "type": "integer", "minimum": 0 },
+    "payload": { "type": "object" }
+  },
+  "additionalProperties": false
+}

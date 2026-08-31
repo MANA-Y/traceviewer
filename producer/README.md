@@ -1,0 +1,68 @@
+# TraceViewer producer
+
+Runs a Python presentation module, records source locations and selected
+values, and writes a versioned JSON snapshot for the viewer.
+
+User-facing workflow: [docs/AUTHORING.md](../AUTHORING.md).
+Helper signatures: [authoring API](../skills/traceviewer-authoring/references/authoring-api.md).
+
+## Install
+
+```bash
+python -m pip install -e 'producer[live]'
+```
+
+Add the `binary` extra only when building the standalone CLI.
+
+## Commands
+
+```bash
+traceviewer new hello
+traceviewer dev presentations.hello
+traceviewer build presentations.hello
+traceviewer validate presentations.hello
+traceviewer doctor
+traceviewer pack presentations.hello --output dist/hello-presentation
+traceviewer serve --port 4173
+```
+
+`dev` starts the built viewer and live producer together. Use `live` instead
+when you are changing the React viewer with `npm run dev`.
+
+In this repository, presentations import helpers from `execute_util`. An
+installed package can import from `traceviewer_producer` instead.
+
+```python
+from execute_util import callout, code, notes, text
+
+
+def main():
+    text("# Example")
+    notes("Presenter-only guidance.")
+    code("print(42)", "python")
+    callout("Save the file to refresh the live view.", tone="success")
+```
+
+`notes()` attaches to the previous content step. Static audience builds strip
+notes and, when notes exist, the Python source as well. Use
+`--include-notes` only for a private presenter snapshot.
+
+The legacy entrypoints still work:
+
+```bash
+python execute.py -m presentations.hello
+traceviewer -m presentations.hello --live
+```
+
+Live mode prints independent presenter, notes, and audience URLs. Only the
+presenter token can send step controls or receive notes. Non-loopback binding
+requires `--allow-remote`. See [docs/LIVE_PROTOCOL.md](../docs/LIVE_PROTOCOL.md).
+
+Copy rebuildable source with `python3 scripts/pack_source.py` and follow
+[docs/BUILD.md](../docs/BUILD.md). Build a local binary with
+`python scripts/build_binary.py` after installing `producer[binary]`. The
+script does not publish its output.
+
+Optional libraries such as Torch or SymPy belong to presentation modules, not
+to this package. Common values are serialized only if the presentation already
+loaded those libraries.

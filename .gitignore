@@ -1,0 +1,26 @@
+node_modules/
+dist/
+__pycache__/
+*.py[cod]
+.venv/
+.venv-build/
+build/
+test-results/
+playwright-report/
+*.egg-info/
+.DS_Store
+.pytest_cache/
+
+# Local talks stay out of the repo. The bundled example is tracked.
+presentations/*
+!presentations/__init__.py
+!presentations/example.py
+!presentations/example_content.py
+
+# Generated snapshots except the tiny bundled example.
+public/var/traces/*
+!public/var/traces/presentations.example.json
+
+# Local research notes and talk assets.
+materials/
+public/var/order_frame/

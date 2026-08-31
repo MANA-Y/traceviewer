@@ -1,0 +1,10 @@
+{
+  "formatVersion": 1,
+  "kind": "source",
+  "fileCount": 147,
+  "docs": [
+    "README.md",
+    "docs/BUILD.md",
+    "docs/AUTHORING.md"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "formatVersion": 2,
+  "files": {
+    "presentation.py": "def main():\n    message = 'Hello'\n"
+  },
+  "frames": [
+    {
+      "path": "presentation.py",
+      "line_number": 2,
+      "function_name": "main",
+      "code": "    message = 'Hello'"
+    }
+  ],
+  "renderings": [
+    [
+      { "type": "markdown", "data": "# Hello", "style": null }
+    ]
+  ],
+  "outputs": [""],
+  "presentationSteps": [0],
+  "steps": [
+    [[0], 0, 0, 0, { "message": "Hello" }]
+  ]
+}

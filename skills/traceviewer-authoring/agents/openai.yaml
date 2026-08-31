@@ -1,0 +1,4 @@
+interface:
+  display_name: "TraceViewer Authoring"
+  short_description: "Create and refine code-first presentations"
+  default_prompt: "Use $traceviewer-authoring to create a presentation from scratch."
