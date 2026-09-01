@@ -1,6 +1,6 @@
 # Authoring API
 
-Import helpers from `execute_util` in repository presentations, or from `traceviewer_producer` in an installed package.
+Import helpers from `traceviewer`. Repository modules may still use `execute_util` or `traceviewer_producer`.
 
 ## Basic content
 

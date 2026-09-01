@@ -16,9 +16,12 @@ from traceviewer_producer.development import run_development  # noqa: E402
 from traceviewer_producer.live import development_origins  # noqa: E402
 from traceviewer_producer.scaffold import (  # noqa: E402
     create_presentation,
+    create_talk_project,
     module_name_for_directory,
     validate_module_slug,
+    validate_project_name,
 )
+from traceviewer_producer.targets import resolve_presentation_target  # noqa: E402
 
 
 class ScaffoldTest(unittest.TestCase):
@@ -40,7 +43,7 @@ class ScaffoldTest(unittest.TestCase):
             )
             source = destination.read_text(encoding="utf-8")
             self.assertEqual(destination.name, "flutter_perf.py")
-            self.assertIn("from execute_util import", source)
+            self.assertIn("from traceviewer import", source)
             self.assertIn("def main():", source)
             self.assertIn('text("# Flutter Perf")', source)
             compile(source, str(destination), "exec")
@@ -60,7 +63,6 @@ class ScaffoldTest(unittest.TestCase):
     def test_new_command_prints_next_steps(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             workspace = Path(temp_dir)
-            directory = workspace / "presentations"
             output = io.StringIO()
             previous = Path.cwd()
             try:
@@ -70,9 +72,38 @@ class ScaffoldTest(unittest.TestCase):
             finally:
                 os.chdir(previous)
             self.assertEqual(result, 0)
-            self.assertIn("Created presentations/demo.py", output.getvalue())
-            self.assertIn("traceviewer dev presentations.demo", output.getvalue())
-            self.assertIn("traceviewer build presentations.demo", output.getvalue())
+            self.assertTrue((workspace / "demo" / "talk.py").is_file())
+            self.assertTrue((workspace / "demo" / "assets").is_dir())
+            self.assertIn("Created demo/talk.py", output.getvalue())
+            self.assertIn("cd demo", output.getvalue())
+            self.assertIn("traceviewer dev talk.py", output.getvalue())
+            self.assertIn("traceviewer build talk.py", output.getvalue())
+
+    def test_create_talk_project_accepts_hyphenated_names(self):
+        self.assertEqual(validate_project_name("my-talk"), "my-talk")
+        with self.assertRaises(ValueError):
+            validate_project_name("My Talk")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            destination = create_talk_project("my-talk", parent=Path(temp_dir))
+            source = destination.read_text(encoding="utf-8")
+            self.assertEqual(destination, Path(temp_dir) / "my-talk" / "talk.py")
+            self.assertIn('text("# My Talk")', source)
+            self.assertIn("from traceviewer import", source)
+
+    def test_generated_talk_executes_through_file_path(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workspace = Path(temp_dir)
+            create_talk_project("demo", parent=workspace)
+            previous = Path.cwd()
+            try:
+                os.chdir(workspace / "demo")
+                from traceviewer_producer.capture import execute
+
+                trace = execute(resolve_presentation_target("talk.py"))
+            finally:
+                os.chdir(previous)
+            self.assertGreater(len(trace.steps), 0)
+            self.assertIn("from traceviewer import", next(iter(trace.files.values())))
 
     def test_module_name_requires_an_importable_workspace_directory(self):
         with tempfile.TemporaryDirectory() as temp_dir:

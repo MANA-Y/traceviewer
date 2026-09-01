@@ -3,9 +3,9 @@ requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "traceviewer-producer"
-version = "0.1.0"
-description = "Code-first Python trace producer for Trace Viewer"
+name = "traceviewer"
+version = "0.2.0"
+description = "Code-first slides for technical talks"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.11"
@@ -20,3 +20,9 @@ traceviewer = "traceviewer_producer.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+traceviewer = ["viewer/**"]
+
+[tool.setuptools.cmdclass]
+build_py = "traceviewer._build.build_py"

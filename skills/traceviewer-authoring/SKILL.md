@@ -9,15 +9,17 @@ Create presentations as executable Python modules. Treat every visible helper ca
 
 ## Locate the project
 
-Work from the TraceViewer repository root. Confirm that `execute.py`, `execute_util.py`, `producer/`, and `package.json` exist before editing. Preserve unrelated workspace changes.
+Prefer the user's current talk directory. A standalone talk is `talk.py` plus optional `assets/`. Do not require the TraceViewer repository checkout.
 
-Read [references/authoring-api.md](references/authoring-api.md) when selecting blocks or checking their signatures. The human-facing workflow is [docs/AUTHORING.md](../../docs/AUTHORING.md). Inspect `presentations/example.py` for the bundled starter only when the task benefits from one.
+If the workspace *is* the TraceViewer repository, confirm that `producer/`, `package.json`, and `presentations/example.py` exist before editing. Preserve unrelated workspace changes. `execute_util` remains valid only for in-repo modules.
+
+Read [references/authoring-api.md](references/authoring-api.md) when selecting blocks or checking their signatures. The human-facing workflow is [docs/AUTHORING.md](../../docs/AUTHORING.md). Inspect `presentations/example.py` only when editing that bundled starter.
 
 ## Start from scratch
 
 1. Turn the requested story into short sections. Give each section one claim or question.
-2. Run `traceviewer new <name>` to create `presentations/<name>.py`. Do not replace an existing module unless the user explicitly requests `--force`.
-3. Import helpers from `execute_util`; this compatibility module keeps local authoring concise.
+2. If no talk exists, run `traceviewer new <name>` to create `<name>/talk.py`. Do not replace an existing talk unless the user explicitly requests `--force`.
+3. Import helpers from `traceviewer`. Use `execute_util` only when editing a module that already imports it.
 4. Put long code samples in named module constants above `main()`.
 5. Add one helper call per reveal. Keep calls in narrative order.
 6. Add `notes("...")` immediately after the content step when the presenter needs a private prompt. Notes do not create an audience step.
@@ -27,7 +29,7 @@ Read [references/authoring-api.md](references/authoring-api.md) when selecting b
 Use this minimal shape:
 
 ```python
-from execute_util import callout, code, notes, section, text
+from traceviewer import callout, code, notes, section, text
 
 
 EXAMPLE = """void main() {
@@ -48,19 +50,15 @@ Do not add fake `def main():` slides, manual line numbers, navigation controls, 
 
 ## Iterate with hot reload
 
-Start the viewer once:
+From the talk directory:
 
 ```bash
-npm run dev
+traceviewer dev talk.py
 ```
 
-Start the producer watcher in another terminal:
+Viewer contributors working in the TraceViewer repository can run `npm run dev` and `traceviewer live presentations.<name> --open` in two terminals instead.
 
-```bash
-traceviewer live presentations.<name> --open
-```
-
-With `--open`, the producer opens the viewer after the live server is ready. Otherwise open the exact `Viewer URL` it prints. Keep both processes running while editing; saving the presentation module triggers a revision. If an edit fails, inspect the producer diagnostic and fix the module—the viewer keeps the last valid revision.
+Keep the process running while editing; saving the presentation module triggers a revision. If an edit fails, inspect the producer diagnostic and fix the module—the viewer keeps the last valid revision.
 
 When browser automation cannot access localhost, verify the producer and dev server with their terminal output or `curl`; do not claim visual verification without inspecting the rendered page or a user screenshot.
 
@@ -84,16 +82,12 @@ Keep content readable at presentation distance: short prose, focused code, few s
 After rehearsal succeeds, generate the portable snapshot:
 
 ```bash
-traceviewer build presentations.<name>
+traceviewer build talk.py
 ```
 
-Expect `public/var/traces/presentations.<name>.json`. Open it through:
+Expect `talk.json` next to the talk, or `public/var/traces/<module>.json` when working inside the TraceViewer repository.
 
-```text
-http://localhost:5173/?trace=/var/traces/presentations.<name>.json&animate=1
-```
-
-Run proportionate validation after edits:
+If the workspace is this repository and you changed the viewer, run proportionate validation:
 
 ```bash
 npm run test:all
@@ -109,5 +103,5 @@ Report the authored module, generated snapshot, validation results, and any visu
 - Never embed secrets or live tokens in presentation sources or committed URLs.
 - Never use `shell()` or `terminal()` for commands that mutate external systems without explicit user authorization.
 - Preserve failed-command output with `terminal()` when failure is part of the demonstration; `shell()` raises on a non-zero exit.
-- Use local assets under `public/` for portable snapshots. Do not depend on a presenter machine's absolute paths.
+- Use local assets under `assets/` next to `talk.py`, or `public/` in this repository. Do not depend on a presenter machine's absolute paths.
 - Regenerate the snapshot after source changes; the static trace is an output, not the authoring source.

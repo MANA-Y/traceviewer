@@ -11,6 +11,10 @@ playwright-report/
 .DS_Store
 .pytest_cache/
 
+# Viewer copy produced when building the Python wheel from dist/.
+producer/src/traceviewer/viewer/*
+!producer/src/traceviewer/viewer/.gitignore
+
 # Local talks stay out of the repo. The bundled example is tracked.
 presentations/*
 !presentations/__init__.py

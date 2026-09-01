@@ -1,8 +1,11 @@
 # Building TraceViewer on another host
 
-This is the rebuildable source tree. It does not contain `node_modules`, a
-Python virtualenv, a production `dist/` viewer, or a prebuilt `traceviewer`
-binary. Those are created on the machine that will run the tool.
+This is the rebuildable source tree. Authors installing a `traceviewer` wheel
+do not need this file: the viewer is already inside the package.
+
+This tree does not contain `node_modules`, a Python virtualenv, a production
+`dist/` viewer, or a prebuilt `traceviewer` binary. Those are created on the
+machine that will rebuild the tool.
 
 The binary is platform-local. Build it on every operating system and
 architecture you need; a macOS executable will not run on Linux or Windows.
@@ -182,7 +185,7 @@ Pushes to `main` deploy the production viewer and bundled example to
 | `Python 3.11 or newer is required` | Install a newer Python and recreate `.venv` |
 | `npm: command not found` | Install Node.js 18+ and ensure `npm` is on `PATH` |
 | `TraceViewer web build not found` | Run `npm run build` in the repository root |
-| `Live transport missing` | Reinstall with `pip install -e 'producer[live]'` |
+| `Live transport missing` | Reinstall with `pip install -e 'producer[live]'` or `pip install 'traceviewer[live]'` |
 | PyInstaller missing | Reinstall with `pip install -e 'producer[live,binary]'` |
 | Binary built on the wrong OS | Repeat `scripts/build_binary.py` on the machine that will run it |
 | Viewer opens but examples 404 | The example snapshot lives at `public/var/traces/presentations.example.json`; run `traceviewer build presentations.example` and `npm run build` so Vite copies `public/` |

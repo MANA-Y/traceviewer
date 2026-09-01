@@ -26,6 +26,10 @@ echo.
 echo TraceViewer is ready on this machine.
 echo.
 echo Author a presentation:
+echo   .venv\Scripts\traceviewer new my-talk
+echo   cd my-talk ^&^& ..\.venv\Scripts\traceviewer dev talk.py
+echo.
+echo Or the bundled example from the repo root:
 echo   .venv\Scripts\traceviewer dev presentations.example
 echo.
 echo Build a standalone CLI for this OS and architecture:

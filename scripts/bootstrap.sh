@@ -31,6 +31,10 @@ cat <<'EOF'
 TraceViewer is ready on this machine.
 
 Author a presentation:
+  .venv/bin/traceviewer new my-talk
+  cd my-talk && ../.venv/bin/traceviewer dev talk.py
+
+Or the bundled example from the repo root:
   .venv/bin/traceviewer dev presentations.example
 
 Build a standalone CLI for this OS and architecture:

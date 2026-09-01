@@ -4,37 +4,38 @@ A TraceViewer presentation is a Python module. The producer runs `main()`,
 records each helper call as a playback step, and shows those steps in the
 browser. You do not maintain a separate slide deck.
 
-This guide assumes the toolchain is installed. If you unpacked a source
-archive on a new machine, start with [BUILD.md](BUILD.md).
+This guide assumes the toolchain is installed. A release wheel includes the
+viewer. If you unpacked this source tree, start with [BUILD.md](BUILD.md).
 
 The helper reference is
 [skills/traceviewer-authoring/references/authoring-api.md](../skills/traceviewer-authoring/references/authoring-api.md).
+The product contract is [ADR 0001](adr/0001-standalone-authoring.md).
 The bundled starter is [presentations/example.py](../presentations/example.py).
 
-## 1. Create a module
-
-From the repository root, with the virtualenv active or using `.venv/bin/traceviewer`:
+## 1. Create a talk
 
 ```bash
 traceviewer new hello
+cd hello
+traceviewer dev talk.py
 ```
 
-This writes `presentations/hello.py` and refuses to overwrite an existing file.
-Use `--force` only when replacement is intentional.
+This writes `hello/talk.py` and `hello/assets/`. It refuses to overwrite an
+existing talk. Use `--force` only when replacement is intentional. `--directory`
+sets the parent folder.
 
-Work inside this repository with:
+New talks import helpers from the installed package:
 
 ```python
-from execute_util import callout, code, notes, section, text
+from traceviewer import callout, code, notes, section, text
 ```
 
-Installed-package imports (`from traceviewer_producer import ...`) are
-equivalent. Keep long samples in constants above `main()`. Only helper calls
-inside the presentation flow become audience rows, so line numbers stay
-presentation-relative.
+In this repository, `execute_util` and `traceviewer_producer` still work.
+Keep long samples in constants above `main()`. Only helper calls inside the
+flow become audience rows, so line numbers stay presentation-relative.
 
 ```python
-from execute_util import callout, code, notes, section, text
+from traceviewer import callout, code, notes, section, text
 
 
 SAMPLE = """def main():
@@ -57,7 +58,13 @@ exists only to look like a slide. The viewer derives those.
 ## 2. Edit with live reload
 
 ```bash
-traceviewer dev presentations.hello
+traceviewer dev talk.py
+```
+
+From this repository you can also pass a dotted module:
+
+```bash
+traceviewer dev presentations.example
 ```
 
 This serves the production viewer, starts the live producer, and opens the
@@ -95,9 +102,10 @@ image("public/var/profile.png", width=900, alt="Latency profile")
 link("https://example.com/docs")
 ```
 
-Put images under `public/` so snapshots and packed folders stay portable. For
-one PNG that contains several charts, `focus` selects the visible region and
-`overlays` add numbered explanations. Coordinates are percentages of the image.
+Put images in `assets/` next to `talk.py`, or under `public/` in this
+repository, so snapshots and packed folders stay portable. For one PNG that
+contains several charts, `focus` selects the visible region and `overlays`
+add numbered explanations. Coordinates are percentages of the image.
 
 ### Data and explanations
 
@@ -147,9 +155,9 @@ own steps.
 ### Commands
 
 ```python
-code("python -m pip show traceviewer-producer", "bash")  # shown, not executed
-shell(["python", "--version"])                           # stdout from a successful command
-terminal(["python", "-m", "compileall", "presentations"])  # command, streams, exit, duration
+code("python -m pip show traceviewer", "bash")  # shown, not executed
+shell(["python", "--version"])                  # stdout from a successful command
+terminal(["python", "-m", "compileall", "."])   # command, streams, exit, duration
 ```
 
 `shell()` and `terminal()` take an argument list or a string parsed by `shlex`.
@@ -195,41 +203,35 @@ narrow window, and that every visible row earns its place.
 Validate without opening the browser:
 
 ```bash
-traceviewer validate presentations.hello
+traceviewer validate talk.py
 traceviewer doctor
 ```
 
 ## 5. Publish
 
-Static snapshot for this repository's viewer:
-
 ```bash
-traceviewer build presentations.hello
-```
-
-The JSON is written to `public/var/traces/presentations.hello.json`. Open it
-with `?trace=/var/traces/presentations.hello.json&animate=1`.
-
-Portable folder you can copy to another machine and serve without Python
-authoring:
-
-```bash
-traceviewer pack presentations.hello --output dist/hello-presentation
+traceviewer build talk.py
+traceviewer pack talk.py --output dist/hello-presentation
 traceviewer serve --dist-path dist/hello-presentation
 ```
 
+Outside this repository, `build` writes `talk.json` in the current directory.
+Inside this repository it writes `public/var/traces/<module>.json`. Open a
+repo snapshot with `?trace=/var/traces/presentations.example.json&animate=1`.
+
 `pack` copies the viewer runtime, the snapshot, and the images that snapshot
 references. It refuses missing assets, path traversal, invalid traces, and an
-existing destination unless you pass `--force`.
+existing destination unless you pass `--force`. Live `dev` also serves the
+talk directory so `assets/` images work without packing.
 
-To host the viewer as ordinary static files, run `npm run build` and serve
-`dist/`. Keep assets under `public/` so Vite copies them into that build.
+To host the viewer as ordinary static files from a checkout, run `npm run build`
+and serve `dist/`. Keep those assets under `public/` so Vite copies them.
 
 LAN and tunnel flags are in [BUILD.md](BUILD.md#remote-access).
 
 ## 6. Included examples
 
-- [presentations/example.py](../presentations/example.py) — smallest module
+- [presentations/example.py](../presentations/example.py) — smallest in-repo module
 
 Other files under `presentations/` are local talks and are gitignored.
 Generate the bundled snapshot with notes (so presenter overlay and source

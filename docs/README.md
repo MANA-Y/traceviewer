@@ -14,6 +14,7 @@ node scripts/capture-readme-media.mjs
 | [README](../README.md) | Install, first talk, shortcuts |
 | [AUTHORING.md](AUTHORING.md) | Writing, rehearsing, and packing a talk |
 | [BUILD.md](BUILD.md) | Rebuild on another machine, standalone CLI, tests |
+| [ADR 0001](adr/0001-standalone-authoring.md) | Standalone talk directories and `from traceviewer` |
 
 ## Reference
 

@@ -6,17 +6,30 @@ from pathlib import Path
 
 from .capture import execute
 from .contract import to_document
-from .scaffold import create_presentation, module_name_for_directory
+from .scaffold import create_talk_project
+from .targets import default_asset_root, default_build_output, extra_asset_roots, resolve_presentation_target
 from .validation import load_document, validate_document
 
 
+def _presentation_module(target: str) -> str:
+    return resolve_presentation_target(target)
+
+
+def _asset_root(value: Path | None) -> Path:
+    return Path(value) if value is not None else default_asset_root()
+
+
+def _output_path(value: str | Path | None) -> Path:
+    return Path(value) if value is not None else default_build_output()
+
+
 def _add_build_arguments(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("module", nargs="+", help="Python module(s) to execute")
+    parser.add_argument("module", nargs="+", help="Python module or talk.py path")
     parser.add_argument(
         "-o",
         "--output-path",
-        default="public/var/traces",
-        help="Directory for generated JSON traces",
+        default=None,
+        help="Directory for generated JSON traces (default: public/var/traces or the current directory)",
     )
     parser.add_argument(
         "-I",
@@ -32,7 +45,7 @@ def _add_build_arguments(parser: argparse.ArgumentParser) -> None:
 
 
 def _add_live_arguments(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("module", help="Python module to watch")
+    parser.add_argument("module", help="Python module or talk.py path")
     parser.add_argument("--host", default="127.0.0.1", help="Live server loopback host")
     parser.add_argument("--port", default=8765, type=int, help="Live server port")
     parser.add_argument("--origin", action="append", help="Allowed viewer origin; may be repeated")
@@ -49,24 +62,24 @@ def _add_live_arguments(parser: argparse.ArgumentParser) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Generate Trace Viewer presentations")
+    parser = argparse.ArgumentParser(description="Code-first slides for technical talks")
     commands = parser.add_subparsers(dest="command")
-    new_parser = commands.add_parser("new", help="Create a presentation module")
-    new_parser.add_argument("name", help="Lowercase Python module slug")
+    new_parser = commands.add_parser("new", help="Create a standalone talk directory")
+    new_parser.add_argument("name", help="Lowercase directory name (hyphens allowed)")
     new_parser.add_argument(
         "--directory",
-        default="presentations",
+        default=Path("."),
         type=Path,
-        help="Destination directory (default: presentations)",
+        help="Parent directory for the new talk project (default: current directory)",
     )
-    new_parser.add_argument("--force", action="store_true", help="Replace an existing file")
+    new_parser.add_argument("--force", action="store_true", help="Replace an existing talk.py")
 
     build_command = commands.add_parser("build", help="Generate static presentation snapshots")
     _add_build_arguments(build_command)
     live_command = commands.add_parser("live", help="Watch a presentation and stream revisions")
     _add_live_arguments(live_command)
     dev_command = commands.add_parser("dev", help="Run the viewer and live authoring loop")
-    dev_command.add_argument("module", help="Python module to watch")
+    dev_command.add_argument("module", help="Python module or talk.py path")
     dev_command.add_argument("--viewer-host", default="127.0.0.1", help="Static viewer host")
     dev_command.add_argument("--viewer-port", default=4173, type=int, help="Static viewer port")
     dev_command.add_argument("--live-host", default="127.0.0.1", help="Live server host")
@@ -78,10 +91,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Capture all local variables instead of only @inspect annotations",
     )
     validate_command = commands.add_parser("validate", help="Validate modules or JSON traces")
-    validate_command.add_argument("target", nargs="+", help="Python module or trace JSON path")
+    validate_command.add_argument("target", nargs="+", help="Python module, talk.py path, or trace JSON")
     validate_command.add_argument(
-        "--asset-root", type=Path, default=Path("public"),
-        help="Root used to resolve local image assets (default: public)",
+        "--asset-root", type=Path, default=None,
+        help="Root used to resolve local image assets (default: public/ or the current directory)",
     )
     validate_command.add_argument(
         "-I", "--inspect-all-variables", action="store_true",
@@ -90,10 +103,10 @@ def build_parser() -> argparse.ArgumentParser:
     doctor_command = commands.add_parser("doctor", help="Check the local authoring environment")
     doctor_command.add_argument("--dist-path", type=Path, help="Explicit viewer dist directory")
     pack_command = commands.add_parser("pack", help="Create a portable static presentation folder")
-    pack_command.add_argument("target", help="Python module or trace JSON path")
+    pack_command.add_argument("target", help="Python module, talk.py path, or trace JSON")
     pack_command.add_argument("-o", "--output", type=Path, default=Path("dist/traceviewer-package"))
     pack_command.add_argument("--dist-path", type=Path, help="Explicit viewer dist directory")
-    pack_command.add_argument("--asset-root", type=Path, default=Path("public"))
+    pack_command.add_argument("--asset-root", type=Path, default=None)
     pack_command.add_argument("--include-notes", action="store_true")
     pack_command.add_argument("-I", "--inspect-all-variables", action="store_true")
     pack_command.add_argument("--force", action="store_true")
@@ -107,7 +120,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-o",
         "--output-path",
-        default="public/var/traces",
+        default=None,
         help="Directory for generated JSON traces",
     )
     parser.add_argument("--live", action="store_true", help="Watch one module and stream revisions")
@@ -144,25 +157,34 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "new":
         try:
-            module_name = module_name_for_directory(args.directory, args.name)
-            destination = create_presentation(
+            destination = create_talk_project(
                 args.name,
-                directory=args.directory,
+                parent=args.directory,
                 force=args.force,
             )
         except (ValueError, FileExistsError) as error:
             parser.error(str(error))
-        print(f"Created {destination}")
+        try:
+            created = destination.resolve().relative_to(Path.cwd())
+        except ValueError:
+            created = destination
+        print(f"Created {created.as_posix()}")
         print("\nStart editing with live reload:")
-        print(f"  traceviewer dev {module_name}")
+        print(f"  cd {created.parent.as_posix()}")
+        print("  traceviewer dev talk.py")
         print("\nCreate a static snapshot:")
-        print(f"  traceviewer build {module_name}")
+        print("  traceviewer build talk.py")
         return 0
     if args.command == "serve":
         from .static_server import serve_viewer
 
         try:
-            serve_viewer(args.host, args.port, args.dist_path)
+            serve_viewer(
+                args.host,
+                args.port,
+                args.dist_path,
+                extra_roots=extra_asset_roots(Path.cwd(), default_asset_root()),
+            )
         except KeyboardInterrupt:
             print("TraceViewer server stopped")
         return 0
@@ -175,16 +197,17 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "validate":
         from .packaging import validate_assets
 
+        asset_root = _asset_root(args.asset_root)
         has_errors = False
         for target in args.target:
             try:
                 if target.lower().endswith(".json"):
                     document = load_document(target)
                 else:
-                    module_name = target.removesuffix(".py").replace("/", ".")
+                    module_name = _presentation_module(target)
                     trace = execute(module_name, inspect_all_variables=args.inspect_all_variables)
                     document = to_document(trace, include_presenter_notes=True)
-                errors = [*validate_document(document), *validate_assets(document, args.asset_root)]
+                errors = [*validate_document(document), *validate_assets(document, asset_root)]
             except Exception as error:
                 errors = [str(error)]
             if errors:
@@ -202,14 +225,14 @@ def main(argv: list[str] | None = None) -> int:
             if args.target.lower().endswith(".json"):
                 document = load_document(args.target)
             else:
-                module_name = args.target.removesuffix(".py").replace("/", ".")
+                module_name = _presentation_module(args.target)
                 trace = execute(module_name, inspect_all_variables=args.inspect_all_variables)
                 document = to_document(trace, include_presenter_notes=args.include_notes)
             result = pack_document(
                 document,
                 args.output,
                 viewer_dist=args.dist_path,
-                asset_root=args.asset_root,
+                asset_root=_asset_root(args.asset_root),
                 force=args.force,
             )
         except (ValueError, FileExistsError, OSError) as error:
@@ -223,7 +246,7 @@ def main(argv: list[str] | None = None) -> int:
 
         try:
             run_development(
-                args.module.removesuffix(".py").replace("/", "."),
+                _presentation_module(args.module),
                 viewer_host=args.viewer_host,
                 viewer_port=args.viewer_port,
                 live_host=args.live_host,
@@ -255,7 +278,7 @@ def main(argv: list[str] | None = None) -> int:
 
         try:
             asyncio.run(run_live(
-                modules[0].removesuffix(".py").replace("/", "."),
+                _presentation_module(modules[0]),
                 host=args.host,
                 port=args.port,
                 origins=set(args.origin) if args.origin else None,
@@ -268,10 +291,10 @@ def main(argv: list[str] | None = None) -> int:
         except KeyboardInterrupt:
             print("Live producer stopped")
         return 0
-    output_path = Path(args.output_path)
+    output_path = _output_path(args.output_path)
     output_path.mkdir(parents=True, exist_ok=True)
     for raw_module in modules:
-        module_name = raw_module.removesuffix(".py").replace("/", ".")
+        module_name = _presentation_module(raw_module)
         trace = execute(module_name, inspect_all_variables=args.inspect_all_variables)
         destination = output_path / f"{module_name}.json"
         # Traces are machine-generated and can reach millions of steps, so they

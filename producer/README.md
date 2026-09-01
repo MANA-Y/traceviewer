@@ -5,12 +5,19 @@ values, and writes a versioned JSON snapshot for the viewer.
 
 User-facing workflow: [docs/AUTHORING.md](../AUTHORING.md).
 Helper signatures: [authoring API](../skills/traceviewer-authoring/references/authoring-api.md).
+Product contract: [ADR 0001](../docs/adr/0001-standalone-authoring.md).
 
 ## Install
 
+From this repository, after `npm run build` (or `./scripts/bootstrap.sh`):
+
 ```bash
-python -m pip install -e 'producer[live]'
+python -m pip install -e '.[live]'
 ```
+
+The path form `pip install -e 'producer[live]'` from the repo root is the
+same package. A release wheel is named `traceviewer` and includes the viewer
+build; authors then do not need Node.js.
 
 Add the `binary` extra only when building the standalone CLI.
 
@@ -18,22 +25,24 @@ Add the `binary` extra only when building the standalone CLI.
 
 ```bash
 traceviewer new hello
-traceviewer dev presentations.hello
-traceviewer build presentations.hello
-traceviewer validate presentations.hello
+cd hello
+traceviewer dev talk.py
+traceviewer build talk.py
+traceviewer validate talk.py
 traceviewer doctor
-traceviewer pack presentations.hello --output dist/hello-presentation
+traceviewer pack talk.py --output dist/hello-presentation
 traceviewer serve --port 4173
 ```
 
 `dev` starts the built viewer and live producer together. Use `live` instead
-when you are changing the React viewer with `npm run dev`.
+when you are changing the React viewer with `npm run dev`. Both accept a file
+path or a dotted module (`presentations.example`).
 
-In this repository, presentations import helpers from `execute_util`. An
-installed package can import from `traceviewer_producer` instead.
+New talks import helpers from `traceviewer`. In this repository,
+`execute_util` remains a compatibility shim.
 
 ```python
-from execute_util import callout, code, notes, text
+from traceviewer import callout, code, notes, text
 
 
 def main():

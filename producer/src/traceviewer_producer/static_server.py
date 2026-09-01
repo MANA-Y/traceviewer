@@ -25,8 +25,16 @@ def bundled_viewer_path() -> Path:
     return path
 
 
+def packaged_viewer_path() -> Path:
+    """Return the viewer files shipped inside the installed wheel."""
+    path = Path(__file__).resolve().parents[1] / "traceviewer" / "viewer"
+    if (path / "index.html").is_file():
+        return path
+    raise ViewerAssetsNotFound(f"packaged viewer is incomplete: {path}")
+
+
 def find_viewer_dist(dist_path: str | Path | None = None) -> Path:
-    """Resolve an explicit, configured, bundled, or source-tree viewer build."""
+    """Resolve an explicit, configured, bundled, packaged, or source-tree viewer."""
     candidates: list[Path] = []
     if dist_path is not None:
         candidates.append(Path(dist_path))
@@ -35,6 +43,10 @@ def find_viewer_dist(dist_path: str | Path | None = None) -> Path:
     else:
         try:
             candidates.append(bundled_viewer_path())
+        except ViewerAssetsNotFound:
+            pass
+        try:
+            candidates.append(packaged_viewer_path())
         except ViewerAssetsNotFound:
             pass
         candidates.append(Path.cwd() / "dist")
@@ -46,26 +58,62 @@ def find_viewer_dist(dist_path: str | Path | None = None) -> Path:
             return resolved
     shown = ", ".join(str(path) for path in candidates) or "<none>"
     raise ViewerAssetsNotFound(
-        f"TraceViewer web build not found (checked: {shown}). Run `npm run build` "
+        f"TraceViewer web build not found (checked: {shown}). "
+        "Install a release wheel, run `npm run build` in this repository, "
         "or pass --dist-path."
     )
 
 
 class ViewerRequestHandler(SimpleHTTPRequestHandler):
-    """Static handler with safe SPA fallback for client-side routes."""
+    """Static handler with safe SPA fallback and optional talk-asset roots."""
 
-    def __init__(self, *args, directory: str, **kwargs):
+    def __init__(self, *args, directory: str, extra_roots: list[Path] | None = None, **kwargs):
         self.viewer_root = Path(directory).resolve()
+        self.extra_roots = [Path(root).resolve() for root in extra_roots or []]
         super().__init__(*args, directory=directory, **kwargs)
 
+    def _requested_relative(self) -> str:
+        return unquote(urlsplit(self.path).path).lstrip("/")
+
     def _requested_path(self) -> Path | None:
-        relative = unquote(urlsplit(self.path).path).lstrip("/")
-        candidate = (self.viewer_root / relative).resolve()
+        candidate = (self.viewer_root / self._requested_relative()).resolve()
         try:
             candidate.relative_to(self.viewer_root)
         except ValueError:
             return None
         return candidate
+
+    def _extra_file(self) -> Path | None:
+        relative = self._requested_relative()
+        if not relative:
+            return None
+        for root in self.extra_roots:
+            candidate = (root / relative).resolve()
+            try:
+                candidate.relative_to(root)
+            except ValueError:
+                continue
+            if candidate.is_file():
+                return candidate
+        return None
+
+    def _send_existing_file(self, path: Path):
+        try:
+            handle = path.open("rb")
+        except OSError:
+            self.send_error(404, "File not found")
+            return None
+        try:
+            stat = path.stat()
+            self.send_response(200)
+            self.send_header("Content-type", self.guess_type(str(path)))
+            self.send_header("Content-Length", str(stat.st_size))
+            self.send_header("Last-Modified", self.date_time_string(int(stat.st_mtime)))
+            self.end_headers()
+            return handle
+        except Exception:
+            handle.close()
+            raise
 
     def send_head(self):
         candidate = self._requested_path()
@@ -74,6 +122,9 @@ class ViewerRequestHandler(SimpleHTTPRequestHandler):
             return None
         if candidate.is_file() or candidate.is_dir():
             return super().send_head()
+        extra = self._extra_file()
+        if extra is not None:
+            return self._send_existing_file(extra)
         # Missing files with a suffix are assets, not client-side routes.
         if candidate.suffix:
             self.send_error(404, "File not found")
@@ -86,10 +137,11 @@ def create_viewer_server(
     host: str = "127.0.0.1",
     port: int = 4173,
     dist_path: str | Path | None = None,
+    extra_roots: list[Path] | None = None,
 ) -> ThreadingHTTPServer:
     """Create, but do not start, a viewer HTTP server."""
     root = find_viewer_dist(dist_path)
-    handler = partial(ViewerRequestHandler, directory=str(root))
+    handler = partial(ViewerRequestHandler, directory=str(root), extra_roots=extra_roots)
     return ThreadingHTTPServer((host, port), handler)
 
 
@@ -97,9 +149,10 @@ def serve_viewer(
     host: str = "127.0.0.1",
     port: int = 4173,
     dist_path: str | Path | None = None,
+    extra_roots: list[Path] | None = None,
 ) -> None:
     """Serve the viewer until interrupted."""
-    server = create_viewer_server(host, port, dist_path)
+    server = create_viewer_server(host, port, dist_path, extra_roots)
     address, bound_port = server.server_address[:2]
     print(f"TraceViewer available at http://{address}:{bound_port}/")
     try:

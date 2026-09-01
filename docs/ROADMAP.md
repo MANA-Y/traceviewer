@@ -10,6 +10,12 @@ technical presentation on any supported machine. Playback is instant, offline,
 recoverable, and safe. The file format and core player remain open and usable
 without a hosted service.
 
+Adoption work is sequenced in
+[ADR 0001](adr/0001-standalone-authoring.md): a talk is a standalone
+directory, authors do not need Node.js, and the canonical import is
+`from traceviewer import ...`. Engine milestones below stay valid but are
+deferred until that author path works from a wheel.
+
 ## Milestone 0: product contract and baseline
 
 Purpose: remove ambiguity before architecture hardens.

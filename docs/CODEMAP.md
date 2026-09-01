@@ -61,8 +61,11 @@ provides an authenticated, role-separated loopback live transport.
 | `vite.config.js` | Build configuration | Production base is `./`; Pages builds pass `--base /<repo>/` |
 | `eslint.config.js` | JavaScript and React lint rules | Lint passes |
 | `dist/` | Generated production bundle | Local build output; gitignored |
-| `producer/` | Installable Python capture and authoring package | Unified producer source of truth |
+| `producer/` | Installable Python capture and authoring package | Distribution name `traceviewer` |
+| `producer/src/traceviewer/` | Public authoring import and bundled viewer assets | `from traceviewer import text` |
+| `producer/src/traceviewer_producer/targets.py` | File path and dotted-module resolution | `talk.py` or `presentations.example` |
 | `producer/src/traceviewer_producer/development.py` | One-command viewer plus live producer orchestration | Powers `traceviewer dev` |
+| `docs/adr/0001-standalone-authoring.md` | Product contract for talks outside this repo | Accepted 2026-09-01 |
 | `producer/src/traceviewer_producer/validation.py` | Dependency-free snapshot contract diagnostics | Powers `traceviewer validate` |
 | `producer/src/traceviewer_producer/doctor.py` | Local authoring environment checks | Powers `traceviewer doctor` |
 | `schema/trace.schema.json` | Canonical snapshot format version 1 | Shared producer/viewer contract |

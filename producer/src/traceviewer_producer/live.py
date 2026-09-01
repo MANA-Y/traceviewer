@@ -178,7 +178,7 @@ def _websocket_serve():
         from websockets.server import serve
     except ImportError as error:
         raise RuntimeError(
-            "Live mode requires: python -m pip install -e 'producer[live]'"
+            "Live mode requires: python -m pip install 'traceviewer[live]'"
         ) from error
     return serve
 

@@ -31,7 +31,7 @@ def collect_checks(dist_path: str | Path | None = None) -> list[DoctorCheck]:
         checks.append(DoctorCheck(
             "fail",
             "Live transport",
-            "missing; install with: python -m pip install 'traceviewer-producer[live]'",
+            "missing; install with: python -m pip install 'traceviewer[live]'",
         ))
     else:
         checks.append(DoctorCheck("pass", "Live transport", "websockets is installed"))

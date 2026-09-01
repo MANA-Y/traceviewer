@@ -9,6 +9,7 @@ from traceviewer_producer.static_server import (
     ViewerAssetsNotFound,
     create_viewer_server,
     find_viewer_dist,
+    packaged_viewer_path,
 )
 
 
@@ -56,6 +57,31 @@ class StaticServerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as empty:
             with self.assertRaises(ViewerAssetsNotFound):
                 find_viewer_dist(empty)
+
+    def test_serves_files_from_extra_asset_roots(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join(timeout=2)
+        extra = Path(self.temporary.name) / "talk-assets"
+        extra.mkdir()
+        (extra / "assets").mkdir()
+        (extra / "assets" / "diagram.png").write_bytes(b"png")
+        self.server = create_viewer_server(port=0, dist_path=self.dist, extra_roots=[extra])
+        self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+        self.base_url = f"http://127.0.0.1:{self.server.server_port}"
+        self.assertEqual(self.read("/assets/diagram.png"), (200, "png"))
+
+    def test_packaged_viewer_path_is_next_to_producer(self):
+        import traceviewer_producer
+
+        expected = Path(traceviewer_producer.__file__).resolve().parents[1] / "traceviewer" / "viewer"
+        try:
+            found = packaged_viewer_path()
+        except ViewerAssetsNotFound as error:
+            self.assertIn(str(expected), str(error))
+        else:
+            self.assertEqual(found, expected)
 
 
 if __name__ == "__main__":
