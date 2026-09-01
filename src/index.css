@@ -1501,12 +1501,33 @@ body {
   gap: 0.1rem;
 }
 
-.presentation-progress > span {
+.presentation-progress > span,
+.presentation-progress-meta {
   min-width: 4.5rem;
   color: var(--text-muted);
   font: 600 0.82rem/1 system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
   text-align: right;
+}
+
+.presentation-progress-meta {
+  display: grid;
+  justify-items: end;
+  gap: 0.12rem;
+}
+
+.pack-credit {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+}
+
+.pack-credit:hover,
+.pack-credit:focus-visible {
+  color: var(--accent);
+  outline: none;
 }
 
 .presentation-progress-range {

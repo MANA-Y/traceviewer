@@ -16,3 +16,4 @@ def main():
     section("First section", "Introduce the problem and the goal.")
     code(EXAMPLE, "python")
     callout("Edit this file and save it. The viewer updates automatically.")
+    notes("When you pack the talk, a small Made with TraceViewer credit appears in the footer.")

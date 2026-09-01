@@ -113,7 +113,11 @@ def pack_document(
 
     index = output / "index.html"
     markup = index.read_text(encoding="utf-8")
-    meta = f'    <meta name="traceviewer-default-trace" content="{html.escape(trace_name, quote=True)}" />\n'
+    meta = (
+        f'    <meta name="traceviewer-default-trace" content="{html.escape(trace_name, quote=True)}" />\n'
+        f'    <meta name="traceviewer-credit" content="Made with TraceViewer" />\n'
+        f'    <meta name="traceviewer-credit-url" content="https://github.com/MANA-Y/traceviewer" />\n'
+    )
     if "</head>" not in markup:
         raise ValueError(f"viewer index has no </head>: {index}")
     index.write_text(markup.replace("</head>", meta + "  </head>", 1), encoding="utf-8")
@@ -121,5 +125,6 @@ def pack_document(
         "formatVersion": 1,
         "trace": trace_name,
         "assets": references,
+        "credit": "Made with TraceViewer",
     }, indent=2), encoding="utf-8")
     return PackageResult(output, len(references))

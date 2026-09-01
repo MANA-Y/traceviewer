@@ -78,9 +78,12 @@ class PackagingTest(unittest.TestCase):
                 b"woff",
             )
             self.assertEqual(json.loads((output / "trace.json").read_text()), document)
-            self.assertIn("traceviewer-default-trace", (output / "index.html").read_text())
+            markup = (output / "index.html").read_text()
+            self.assertIn("traceviewer-default-trace", markup)
+            self.assertIn("Made with TraceViewer", markup)
             manifest = json.loads((output / "traceviewer-package.json").read_text())
             self.assertEqual(manifest["assets"], ["var/chart.png"])
+            self.assertEqual(manifest["credit"], "Made with TraceViewer")
 
     def test_copy_viewer_runtime_rejects_incomplete_viewer(self):
         with tempfile.TemporaryDirectory() as temp_dir:

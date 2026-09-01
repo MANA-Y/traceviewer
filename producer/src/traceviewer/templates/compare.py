@@ -26,3 +26,4 @@ def main():
 
     section("Verdict", "What the room should remember")
     callout("Ship the compiled path. The build cost is paid once per release.", tone="success")
+    notes("Pack this as the audience artifact. One verdict is the last slide.")

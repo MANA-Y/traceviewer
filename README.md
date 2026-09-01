@@ -166,7 +166,8 @@ traceviewer serve --dist-path dist/hello-presentation
 
 Outside this repository, `build` writes `talk.json` next to the talk. Inside
 this repository it still writes `public/var/traces/<module>.json`. `pack`
-copies the viewer, that snapshot, and its local images. To host the whole app
+copies the viewer, that snapshot, and its local images. Open `index.html` from
+that folder on the talk laptop — Python is not required. To host the whole app
 from a checkout, run `npm run build` and serve `dist/`.
 
 Rebuild and install on another machine with

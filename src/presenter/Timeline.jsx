@@ -1,3 +1,12 @@
+function readPackCredit() {
+  if (typeof document === 'undefined') return null;
+  const label = document.querySelector('meta[name="traceviewer-credit"]')?.getAttribute('content')?.trim();
+  if (!label) return null;
+  const href = document.querySelector('meta[name="traceviewer-credit-url"]')?.getAttribute('content')?.trim()
+    || 'https://github.com/MANA-Y/traceviewer';
+  return { label, href };
+}
+
 function findStepPosition(stepIndices, stepIndex) {
   let low = 0;
   let high = stepIndices.length - 1;
@@ -25,9 +34,17 @@ export default function Timeline({ currentStepIndex, totalSteps, stepIndices, se
   const stepProgress = currentStepIndex !== null
     ? `${currentPosition + 1} / ${visibleStepCount}`
     : null;
+  const credit = readPackCredit();
   return (
     <footer className="presentation-progress" title={stepProgress}>
-      <span>{stepProgress}</span>
+      <span className="presentation-progress-meta">
+        {stepProgress}
+        {credit && (
+          <a className="pack-credit" href={credit.href} target="_blank" rel="noreferrer">
+            {credit.label}
+          </a>
+        )}
+      </span>
       <div className="presentation-progress-control">
         <input
           className="presentation-progress-range"

@@ -41,3 +41,4 @@ def main():
     section("Fix", "The smallest change that removes the pile-up")
     diff(BEFORE, AFTER, "python")
     callout("State the measured recovery. One number is enough.", tone="success")
+    notes("Pack the audience folder before the talk. The footer credit is enough attribution.")

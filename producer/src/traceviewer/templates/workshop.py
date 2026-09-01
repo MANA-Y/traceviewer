@@ -30,3 +30,4 @@ def main():
     section("Next beat", "Change one thing, record it again")
     text("Swap the URL or the assertion. Capture the new command with `terminal()`.")
     callout("Keep mutating commands out of the talk unless the mutation is the lesson.", tone="warning")
+    notes("Pack the lab before the room arrives. Offline replay does not need Python.")

@@ -251,7 +251,8 @@ def main(argv: list[str] | None = None) -> int:
             print(f"FAIL {args.target}\n  {error}")
             return 1
         print(f"Packed {len(document['steps'])} steps and {result.assets} assets to {result.destination}")
-        print(f"Serve with: traceviewer serve --dist-path {result.destination}")
+        print(f"Open {result.destination / 'index.html'} offline, or serve with:")
+        print(f"  traceviewer serve --dist-path {result.destination}")
         return 0
     if args.command == "dev":
         from .development import run_development

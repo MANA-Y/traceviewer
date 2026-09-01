@@ -235,6 +235,24 @@ talk directory so `assets/` images work without packing.
 To host the viewer as ordinary static files from a checkout, run `npm run build`
 and serve `dist/`. Keep those assets under `public/` so Vite copies them.
 
+Copy that folder to a USB stick or the talk laptop. Python is not required at
+show time. The packed page opens `trace.json` by default and shows a small
+"Made with TraceViewer" credit in the footer.
+
+### Show-day checklist
+
+Ten minutes before the room fills:
+
+- Open the packed `index.html` (or `traceviewer serve --dist-path …`) once
+  **offline**. Click through the first, middle, and last steps. Confirm images.
+- Share the **Presenter** window, not the notes window. Keep the presenter
+  token off slides, chat, and git.
+- Notes: `N` or the Notes URL on a phone. Changing `role=audience` to
+  `role=presenter` in a URL does not grant control.
+- Second screen: fullscreen the audience view if you have one. Otherwise the
+  presenter overlay (`P`) stays on the shared deck.
+- Live tokens die with the process. Packed snapshots do not need them.
+
 LAN and tunnel flags are in [BUILD.md](BUILD.md#remote-access).
 
 ## 6. Included examples
