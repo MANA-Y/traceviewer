@@ -19,8 +19,7 @@ import Timeline from './presenter/Timeline';
 import FontControl from './FontControl';
 import ThemeControl from './ThemeControl';
 import VirtualizedSource from './VirtualizedSource';
-import { BUNDLED_EXAMPLE_TRACE, displayNameForTrace, loadStepComment, resolveSnapshotUrl } from './openTrace';
-import { resolvePublicAssetUrl } from './publicUrl';
+import { BUNDLED_EXAMPLE, displayNameForTrace, loadStepComment, resolveSnapshotUrl } from './openTrace';
 import { exportPresentationPdf } from './exportPdf';
 import PrintSpeakerNotes from './presenter/PrintSpeakerNotes';
 
@@ -455,31 +454,7 @@ function ShortcutHelp({ onClose }) {
   );
 }
 
-const LANDING_EXAMPLES = [
-  ["Minimal example", BUNDLED_EXAMPLE_TRACE],
-];
-
 function LandingScreen({ navigate }) {
-  const [examples, setExamples] = useState([]);
-  useEffect(() => {
-    let cancelled = false;
-    Promise.all(
-      LANDING_EXAMPLES.map(async (entry) => {
-        try {
-          const response = await fetch(resolvePublicAssetUrl(entry[1]), { method: 'HEAD' });
-          return response.ok ? entry : null;
-        } catch {
-          return null;
-        }
-      }),
-    ).then((rows) => {
-      if (!cancelled) setExamples(rows.filter(Boolean));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   return (
     <main className="landing-screen">
       <div className="landing-chrome">
@@ -488,28 +463,24 @@ function LandingScreen({ navigate }) {
       </div>
       <div className="landing-inner">
         <header className="landing-header">
-          <h1>Open a presentation</h1>
-          <p>
-            {examples.length > 0
-              ? 'Choose an included talk, a local snapshot file, or a served URL.'
-              : 'Open a local snapshot file, paste a served URL, or use the viewer query printed by the producer.'}
-          </p>
+          <h1>Code-first slides</h1>
+          <p>Write a Python program. Reveal the talk one step at a time.</p>
         </header>
-        {examples.length > 0 && (
-          <section className="landing-section" aria-label="Included talks">
-            <h2>Included</h2>
-            <div className="presentation-list">
-              {examples.map(([title, trace]) => (
-                <button key={trace} type="button" onClick={() => navigate(`?trace=${encodeURIComponent(trace)}&animate=1`)}>
-                  <strong>{title}</strong>
-                  <small>{trace}</small>
-                </button>
-              ))}
-            </div>
-          </section>
-        )}
+        <section className="landing-section" aria-label="Example talk">
+          <button
+            className="landing-play"
+            type="button"
+            onClick={() => navigate(`?trace=${encodeURIComponent(BUNDLED_EXAMPLE.trace)}&animate=1`)}
+          >
+            <strong>{BUNDLED_EXAMPLE.title}</strong>
+            <small>{BUNDLED_EXAMPLE.detail}</small>
+          </button>
+        </section>
         <OpenTracePicker navigate={navigate} />
-        <p className="landing-hint">Share the Presenter URL screen. Open notes with <kbd>N</kbd> or the Notes URL on a phone.</p>
+        <p className="landing-hint">
+          Or start your own with <code>traceviewer new my-talk</code>.
+          Share the Presenter URL screen. Open notes with <kbd>N</kbd>.
+        </p>
       </div>
     </main>
   );

@@ -18,7 +18,7 @@ Read [references/authoring-api.md](references/authoring-api.md) when selecting b
 ## Start from scratch
 
 1. Turn the requested story into short sections. Give each section one claim or question.
-2. If no talk exists, run `traceviewer new <name>` to create `<name>/talk.py`. Do not replace an existing talk unless the user explicitly requests `--force`.
+2. If no talk exists, run `traceviewer new <name>` to create `<name>/talk.py`. Use `--template bug-review`, `workshop`, or `compare` when the story matches that shape. Do not replace an existing talk unless the user explicitly requests `--force`.
 3. Import helpers from `traceviewer`. Use `execute_util` only when editing a module that already imports it.
 4. Put long code samples in named module constants above `main()`.
 5. Add one helper call per reveal. Keep calls in narrative order.

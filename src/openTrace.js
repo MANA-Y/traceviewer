@@ -2,6 +2,11 @@ import { resolvePublicAssetUrl } from './publicUrl.js';
 
 export const LOCAL_TRACE_ID = 'local';
 export const BUNDLED_EXAMPLE_TRACE = '/var/traces/presentations.example.json';
+export const BUNDLED_EXAMPLE = {
+  title: 'Play the example talk',
+  detail: 'Checkout timeouts — a 90-second bug review',
+  trace: BUNDLED_EXAMPLE_TRACE,
+};
 export const RECENT_TRACES_KEY = 'traceviewer-recent-traces';
 export const STEP_COMMENTS_KEY = 'traceviewer-step-comments';
 export const MAX_RECENT_TRACES = 6;

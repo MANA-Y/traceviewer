@@ -73,7 +73,8 @@ provides an authenticated, role-separated loopback live transport.
 | `src/core/playback.js` | Pure commands, stable derived IDs, navigation targets, location and environment indexes | Playback source of truth |
 | `execute.py` | Legacy-compatible producer CLI entrypoint | Delegates to the package CLI |
 | `execute_util.py` | Legacy authoring imports | Preserves existing presentation imports |
-| `presentations/example.py` | Minimal code-first example | No extra runtime dependencies |
+| `presentations/example.py` | Bundled checkout-timeout bug review | Landing and Pages demo |
+| `producer/src/traceviewer/templates/` | `new --template` starters | starter, bug-review, workshop, compare |
 
 ## Producer flow
 

@@ -23,7 +23,11 @@ The included examples sit in a narrow band of that surface:
 
 | Example | Genre |
 | --- | --- |
-| `presentations/example.py` | Short product pitch |
+| `presentations/example.py` | Bug review (checkout timeouts) |
+| `traceviewer new --template starter` | Short first talk |
+| `traceviewer new --template bug-review` | Symptom, hypothesis, diff, fix |
+| `traceviewer new --template workshop` | Prompt, recorded result, your-turn pause |
+| `traceviewer new --template compare` | Two measurements, one verdict |
 
 A rendering-free debugger recording is also legal. When a trace has no
 non-note renderings, readers treat every step as a presentation step.
@@ -167,8 +171,10 @@ state of a location at a step.
 
 ## Suggested order
 
-1. Ship two or three starter templates on the current API:
-   `traceviewer new bug-review`, `workshop`, and `profile-tour`.
+1. Starter templates on the current API:
+   `traceviewer new --template bug-review`, `workshop`, and `compare`.
+   A profile-tour starter can follow once a bundled screenshot is worth
+   shipping.
 2. Add a live pointer next to `presentation_state`. It unlocks workshop and
    profile-tour pointing without a new renderer or snapshot field.
 3. Add named playback tracks so one recording can serve a default talk and a

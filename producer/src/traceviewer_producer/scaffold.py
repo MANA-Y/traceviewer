@@ -5,6 +5,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from traceviewer.templates import DEFAULT_TEMPLATE, render_template
+
 
 MODULE_SLUG = re.compile(r"^[a-z][a-z0-9_]*$")
 PROJECT_SLUG = re.compile(r"^[a-z][a-z0-9_-]*$")
@@ -55,28 +57,9 @@ def project_title(name: str) -> str:
     return name.replace("_", " ").replace("-", " ").title()
 
 
-def starter_source(name: str) -> str:
+def starter_source(name: str, template: str = DEFAULT_TEMPLATE) -> str:
     """Build the initial source for a new presentation."""
-    title = project_title(name)
-    return f'''"""{title} presentation."""
-
-from traceviewer import callout, code, notes, section, text
-
-
-EXAMPLE = """def greet(name):
-    return f"Hello, {{name}}"
-"""
-
-
-def main():
-    text("# {title}")
-    notes("Introduce the problem this presentation will solve.")
-    text("A code-first presentation with live reload.")
-
-    section("First section", "Introduce the problem and the goal.")
-    code(EXAMPLE, "python")
-    callout("Edit this file and save it. The viewer updates automatically.")
-'''
+    return render_template(template, project_title(name))
 
 
 def create_presentation(
@@ -84,6 +67,7 @@ def create_presentation(
     *,
     directory: Path = Path("presentations"),
     force: bool = False,
+    template: str = DEFAULT_TEMPLATE,
 ) -> Path:
     """Create a presentation module and return its path."""
     slug = validate_module_slug(name)
@@ -91,7 +75,7 @@ def create_presentation(
     if destination.exists() and not force:
         raise FileExistsError(f"{destination} already exists (use --force to replace it)")
     directory.mkdir(parents=True, exist_ok=True)
-    destination.write_text(starter_source(slug), encoding="utf-8")
+    destination.write_text(starter_source(slug, template), encoding="utf-8")
     return destination
 
 
@@ -100,6 +84,7 @@ def create_talk_project(
     *,
     parent: Path = Path("."),
     force: bool = False,
+    template: str = DEFAULT_TEMPLATE,
 ) -> Path:
     """Create ``<name>/talk.py`` and return the talk file path."""
     slug = validate_project_name(name)
@@ -116,5 +101,5 @@ def create_talk_project(
     gitignore = root / ".gitignore"
     if not gitignore.exists():
         gitignore.write_text(GITIGNORE, encoding="utf-8")
-    destination.write_text(starter_source(slug), encoding="utf-8")
+    destination.write_text(starter_source(slug, template), encoding="utf-8")
     return destination

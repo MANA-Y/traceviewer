@@ -10,7 +10,8 @@ viewer. If you unpacked this source tree, start with [BUILD.md](BUILD.md).
 The helper reference is
 [skills/traceviewer-authoring/references/authoring-api.md](../skills/traceviewer-authoring/references/authoring-api.md).
 The product contract is [ADR 0001](adr/0001-standalone-authoring.md).
-The bundled starter is [presentations/example.py](../presentations/example.py).
+The bundled example is [presentations/example.py](../presentations/example.py),
+a short checkout-timeout review. New talks start from `traceviewer new`.
 
 ## 1. Create a talk
 
@@ -22,7 +23,14 @@ traceviewer dev talk.py
 
 This writes `hello/talk.py` and `hello/assets/`. It refuses to overwrite an
 existing talk. Use `--force` only when replacement is intentional. `--directory`
-sets the parent folder.
+sets the parent folder. `--template` picks a talk shape:
+
+| Template | Shape |
+| --- | --- |
+| `starter` | Short first talk (default) |
+| `bug-review` | Symptom, hypothesis, diff, fix |
+| `workshop` | Prompt, recorded output, your-turn pause |
+| `compare` | Two measurements, one verdict |
 
 New talks import helpers from the installed package:
 
@@ -231,7 +239,7 @@ LAN and tunnel flags are in [BUILD.md](BUILD.md#remote-access).
 
 ## 6. Included examples
 
-- [presentations/example.py](../presentations/example.py) — smallest in-repo module
+- [presentations/example.py](../presentations/example.py) — checkout-timeout bug review
 
 Other files under `presentations/` are local talks and are gitignored.
 Generate the bundled snapshot with notes (so presenter overlay and source

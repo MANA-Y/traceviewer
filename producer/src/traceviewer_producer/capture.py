@@ -85,6 +85,8 @@ def _module_source(module: ModuleType) -> Path:
 
 def execute(module_name: str, inspect_all_variables: bool = False) -> Trace:
     """Execute `module.main()` and return a legacy-compatible trace."""
+    importlib.invalidate_caches()
+    sys.modules.pop(module_name, None)
     module = importlib.import_module(module_name)
     main = getattr(module, "main", None)
     if not callable(main):

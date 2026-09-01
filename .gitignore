@@ -19,7 +19,6 @@ producer/src/traceviewer/viewer/*
 presentations/*
 !presentations/__init__.py
 !presentations/example.py
-!presentations/example_content.py
 
 # Generated snapshots except the tiny bundled example.
 public/var/traces/*

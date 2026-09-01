@@ -51,8 +51,13 @@ traceviewer dev presentations.example
 - Presenter, notes, and audience URLs with separate tokens
 - Static JSON snapshots you can host on any web server
 - Markdown, code, images, tables, charts, callouts, diffs, and terminal output
+- Starters for a bug review, a workshop, and a comparison talk
 - Keyboard navigation; the current step lives in the URL
 - Offline TeX through a compact bundled MathJax profile
+
+Slide order is execution order. Marp, Slidev, and Reveal.js keep a separate
+deck file. Jupyter RISE keeps a notebook. TraceViewer keeps one Python
+program.
 
 ## Requirements
 
@@ -86,6 +91,7 @@ the web viewer from this repository.
 
 ```bash
 traceviewer new hello
+# or: traceviewer new hello --template bug-review
 cd hello
 traceviewer dev talk.py
 ```

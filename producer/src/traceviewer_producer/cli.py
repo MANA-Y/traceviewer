@@ -4,6 +4,8 @@ import json
 import sys
 from pathlib import Path
 
+from traceviewer.templates import DEFAULT_TEMPLATE, TEMPLATES, known_templates
+
 from .capture import execute
 from .contract import to_document
 from .scaffold import create_talk_project
@@ -73,6 +75,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Parent directory for the new talk project (default: current directory)",
     )
     new_parser.add_argument("--force", action="store_true", help="Replace an existing talk.py")
+    new_parser.add_argument(
+        "--template",
+        choices=known_templates(),
+        default=DEFAULT_TEMPLATE,
+        help="Talk shape (default: starter). "
+        + "; ".join(f"{name}: {TEMPLATES[name].rstrip('.')}" for name in known_templates()),
+    )
 
     build_command = commands.add_parser("build", help="Generate static presentation snapshots")
     _add_build_arguments(build_command)
@@ -161,6 +170,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.name,
                 parent=args.directory,
                 force=args.force,
+                template=args.template,
             )
         except (ValueError, FileExistsError) as error:
             parser.error(str(error))
@@ -169,6 +179,8 @@ def main(argv: list[str] | None = None) -> int:
         except ValueError:
             created = destination
         print(f"Created {created.as_posix()}")
+        if args.template != DEFAULT_TEMPLATE:
+            print(f"Template: {args.template} — {TEMPLATES[args.template]}")
         print("\nStart editing with live reload:")
         print(f"  cd {created.parent.as_posix()}")
         print("  traceviewer dev talk.py")

@@ -25,6 +25,7 @@ Add the `binary` extra only when building the standalone CLI.
 
 ```bash
 traceviewer new hello
+traceviewer new outage --template bug-review
 cd hello
 traceviewer dev talk.py
 traceviewer build talk.py

@@ -490,9 +490,17 @@ test('scrolls the current image line toward the viewport center', async ({ page 
   }).toBeTruthy();
 });
 
+test('plays the bundled example from the landing', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: /Play the example talk/ }).click();
+  await expect(page.getByRole('heading', { name: 'Checkout timeouts' })).toBeVisible();
+  await expect(page).toHaveURL(/presentations\.example\.json/);
+});
+
 test('opens a local snapshot from the file picker and keeps presenter comments', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Open a presentation' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Code-first slides' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Play the example talk/ })).toBeVisible();
   await page.getByRole('button', { name: 'Open' }).click();
   await expect(page.getByRole('alert')).toContainText('Choose a file or enter a snapshot URL');
 

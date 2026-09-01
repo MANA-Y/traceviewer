@@ -78,6 +78,24 @@ class ScaffoldTest(unittest.TestCase):
             self.assertIn("cd demo", output.getvalue())
             self.assertIn("traceviewer dev talk.py", output.getvalue())
             self.assertIn("traceviewer build talk.py", output.getvalue())
+            self.assertNotIn("Template:", output.getvalue())
+
+    def test_new_command_reports_selected_template(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workspace = Path(temp_dir)
+            output = io.StringIO()
+            previous = Path.cwd()
+            try:
+                os.chdir(workspace)
+                with contextlib.redirect_stdout(output):
+                    result = main(["new", "outage", "--template", "bug-review"])
+            finally:
+                os.chdir(previous)
+            self.assertEqual(result, 0)
+            source = (workspace / "outage" / "talk.py").read_text(encoding="utf-8")
+            self.assertIn("Template: bug-review", output.getvalue())
+            self.assertIn("from traceviewer import", source)
+            self.assertIn("diff(", source)
 
     def test_create_talk_project_accepts_hyphenated_names(self):
         self.assertEqual(validate_project_name("my-talk"), "my-talk")

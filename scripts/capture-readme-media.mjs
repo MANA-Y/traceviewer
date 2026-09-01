@@ -52,7 +52,7 @@ async function openPage(browser) {
 async function captureScreenshots(browser) {
   const { context, page } = await openPage(browser);
   await page.goto(`${BASE}/`);
-  await page.getByRole('heading', { name: 'Open a presentation' }).waitFor();
+  await page.getByRole('heading', { name: 'Code-first slides' }).waitFor();
   await page.waitForTimeout(500);
   await page.screenshot({ path: join(OUT, 'landing.png') });
 

@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  BUNDLED_EXAMPLE,
+  BUNDLED_EXAMPLE_TRACE,
   LOCAL_TRACE_ID,
   commentStorageKey,
   displayNameForTrace,
@@ -41,6 +43,12 @@ test("remembers recent served URLs and skips local snapshots", () => {
     { title: "One again", url: "/one.json" },
     { title: "Two", url: "/two.json" },
   ]);
+});
+
+test("describes the bundled landing example", () => {
+  assert.equal(BUNDLED_EXAMPLE.trace, BUNDLED_EXAMPLE_TRACE);
+  assert.match(BUNDLED_EXAMPLE.title, /Play the example talk/);
+  assert.match(BUNDLED_EXAMPLE.detail, /Checkout timeouts/);
 });
 
 test("builds snapshot hrefs and display names", () => {
