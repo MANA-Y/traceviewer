@@ -84,7 +84,7 @@ async function capturePlayback(browser) {
   const { context, page } = await openPage(browser);
   await page.goto(talkUrl('step=0'));
   await waitForDeck(page);
-  await page.getByRole('heading', { name: 'TraceViewer' }).waitFor();
+  await page.getByRole('heading', { name: 'Checkout timeouts' }).waitFor();
   const steps = await page.locator('.presentation-progress').innerText();
   const total = Number((steps.match(/\/\s*(\d+)/) ?? [0, 1])[1]);
   for (let index = 0; index < total; index += 1) {

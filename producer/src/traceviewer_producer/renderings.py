@@ -338,9 +338,9 @@ def steps(
     """Render a structured step list / agenda item sequence.
 
     Items can be:
-    - pairs/tuples/lists of (title, description), e.g. [("Контекст", "Экраны и метрики"), ...]
+    - pairs/tuples/lists of (title, description), e.g. [("Context", "Screens and metrics"), ...]
     - dicts with 'title' and optional 'description', e.g. [{"title": "...", "description": "..."}, ...]
-    - single strings, e.g. ["Контекст", "Методика", ...]
+    - single strings, e.g. ["Context", "Method", ...]
 
     Each item carries its position and the viewer prints it as a badge, so titles
     need no numbering of their own; a leading "01." in a title is dropped instead
@@ -356,9 +356,9 @@ def steps(
             elif len(item) == 1:
                 title, desc = str(item[0]), ""
             else:
-                title, desc = f"Шаг {index}", ""
+                title, desc = f"Step {index}", ""
         elif isinstance(item, dict):
-            title = str(item.get("title") or item.get("name") or f"Шаг {index}")
+            title = str(item.get("title") or item.get("name") or f"Step {index}")
             desc = str(item.get("description") or item.get("subtitle") or item.get("desc") or "")
         elif isinstance(item, str):
             title = item

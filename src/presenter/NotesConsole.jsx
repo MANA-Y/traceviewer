@@ -59,15 +59,15 @@ export default function NotesConsole({
         {live
           ? canControl
             ? <>
-              <p>Опциональные заметки. Основное управление и шаринг — в окне Presenter. Next/Previous здесь, если отошёл с телефоном.</p>
+              <p>Optional notes window. Sharing and the main controls live in the presenter window. Step here when you walk away with a phone.</p>
               {audienceUrl && (
                 <button type="button" onClick={() => openAudienceWindow(audienceUrl)}>
                   Open audience view
                 </button>
               )}
             </>
-            : <p>Этот токен не управляет докладом. Открой Presenter URL из терминала.</p>
-          : <p>Для шаринга нужен live Presenter URL. Статический снимок меняет только это окно.</p>}
+            : <p>This token cannot control the talk. Open the presenter URL printed in the terminal.</p>
+          : <p>Sharing needs a live presenter URL. A static snapshot only changes this window.</p>}
       </div>
 
       <Notes

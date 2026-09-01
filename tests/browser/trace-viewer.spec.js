@@ -102,7 +102,7 @@ test('shows a loading lobby before the snapshot arrives', async ({ page }) => {
 
 test('switches and persists the color theme', async ({ page }) => {
   await page.getByRole('button', { name: 'Presentation settings' }).click();
-  await page.getByRole('tab', { name: 'Настройки UI' }).click();
+  await page.getByRole('tab', { name: 'Interface' }).click();
   const theme = page.getByRole('combobox', { name: 'Color theme' });
   await theme.selectOption('dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
@@ -110,7 +110,7 @@ test('switches and persists the color theme', async ({ page }) => {
 
   await page.reload();
   await page.getByRole('button', { name: 'Presentation settings' }).click();
-  await page.getByRole('tab', { name: 'Настройки UI' }).click();
+  await page.getByRole('tab', { name: 'Interface' }).click();
   await expect(theme).toHaveValue('dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 
@@ -122,14 +122,14 @@ test('persists presentation text size, line numbers, and section scroll', async 
   await page.keyboard.press('s');
   const dialog = page.getByRole('dialog', { name: 'Presentation settings' });
   await expect(dialog).toBeVisible();
-  await dialog.getByRole('tab', { name: 'Настройки UI' }).click();
+  await dialog.getByRole('tab', { name: 'Interface' }).click();
   await dialog.getByRole('combobox', { name: 'Presentation text size' }).selectOption('1.15');
   await dialog.getByRole('combobox', { name: 'Presentation font' }).selectOption('serif');
   await dialog.getByRole('combobox', { name: 'Code font' }).selectOption('monaco');
   await dialog.getByRole('combobox', { name: 'Step highlight color' }).selectOption('green');
   await dialog.getByRole('checkbox', { name: 'Line numbers' }).uncheck();
   await dialog.getByRole('checkbox', { name: 'Pin headings' }).uncheck();
-  await dialog.getByRole('tab', { name: 'Основные' }).click();
+  await dialog.getByRole('tab', { name: 'Presentation' }).click();
   await dialog.getByRole('checkbox', { name: 'Scroll to section start' }).uncheck();
   await expect.poll(() => page.locator('html').evaluate((element) => (
     getComputedStyle(element).getPropertyValue('--presentation-scale').trim()
@@ -203,7 +203,7 @@ test('switches the PDF export between book and slide styles', async ({ page }) =
 
   await page.getByRole('button', { name: 'Presentation settings' }).click();
   const dialog = page.getByRole('dialog', { name: 'Presentation settings' });
-  await dialog.getByRole('tab', { name: 'Настройки UI' }).click();
+  await dialog.getByRole('tab', { name: 'Interface' }).click();
   await dialog.getByLabel('Center headings').check();
   await page.keyboard.press('Escape');
 

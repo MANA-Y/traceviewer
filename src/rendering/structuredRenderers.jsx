@@ -210,7 +210,7 @@ function TimelineChart({ payload, style }) {
   const ticks = [];
   for (let tick = 0; tick <= visualMax + 0.01; tick += tickStep) ticks.push(tick);
   const unit = String(payload.unit || 'ms');
-  const axisLabel = compress ? `${unit} (wait сжаты и подсвечены)` : unit;
+  const axisLabel = compress ? `${unit} (wait spans compressed and highlighted)` : unit;
   const hasWait = allSpans.some((span) => span.kind === 'wait');
 
   const colorFor = (lane, span) => {
@@ -571,7 +571,7 @@ function GraphChart({ payload, style }) {
       </defs>
       {graph.hasLaneLabels ? graph.nodes.reduce((labels, node) => {
         if (labels.some((item) => item.lane === node.lane)) return labels;
-        labels.push({ lane: node.lane, y: node.y + GRAPH_NODE_H / 2 + 4, name: graph.laneNames[node.lane] || `ряд ${node.lane + 1}` });
+        labels.push({ lane: node.lane, y: node.y + GRAPH_NODE_H / 2 + 4, name: graph.laneNames[node.lane] || `lane ${node.lane + 1}` });
         return labels;
       }, []).map((item) => (
         <text key={`lane-${item.lane}`} x={graph.left - 14} y={item.y} textAnchor="end" className="graph-lane-label">{item.name}</text>
@@ -607,8 +607,8 @@ function GraphChart({ payload, style }) {
       ))}
     </svg>
     <figcaption className="chart-legend">
-      <span className="chart-legend-item"><span className="chart-legend-swatch graph-legend-flow" />этапы</span>
-      <span className="chart-legend-item"><span className="chart-legend-swatch graph-legend-cycle" />циклы</span>
+      <span className="chart-legend-item"><span className="chart-legend-swatch graph-legend-flow" />stages</span>
+      <span className="chart-legend-item"><span className="chart-legend-swatch graph-legend-cycle" />cycles</span>
     </figcaption>
   </figure>;
 }

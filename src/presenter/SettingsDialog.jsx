@@ -19,9 +19,9 @@ import {
 } from '../presentationSettings';
 
 const SECTIONS = [
-  { id: 'main', label: 'Основные' },
-  { id: 'ui', label: 'Настройки UI' },
-  { id: 'other', label: 'Прочие' },
+  { id: 'main', label: 'Presentation' },
+  { id: 'ui', label: 'Interface' },
+  { id: 'other', label: 'Other' },
 ];
 
 function SettingsToggle({ label, checked, onChange }) {

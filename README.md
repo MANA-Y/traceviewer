@@ -27,7 +27,7 @@ and reveal the talk one step at a time in a browser. No separate slide deck.
 
 <p align="center">
   <img src="docs/images/landing.png" alt="Landing page to open a snapshot" width="720"><br>
-  <sub>Landing page: open the bundled example, a local file, or a snapshot URL</sub>
+  <sub>Landing page: play the bundled talk, or open a local snapshot</sub>
 </p>
 
 ```bash

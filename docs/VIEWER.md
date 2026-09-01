@@ -19,10 +19,10 @@ up new hashed assets in `dist/`.
   the theme control in the page body; during a talk, theme lives in settings.
 - The current-step highlight is a quiet full-bleed tint from the screen edges,
   without an extra outline. Theme uses 10% black by day and 10% white by night.
-- Presentation settings use a left nav: Основные, Настройки UI, and Прочие.
+- Presentation settings use a left nav: Presentation, Interface, and Other.
   Theme, text size, images, step highlight, line numbers, and heading pin live
-  under UI; section scroll and reveal are under Основные. Those values persist
-  in `localStorage`.
+  under Interface; section scroll and reveal are under Presentation. Those
+  values persist in `localStorage`.
 - Lines are grouped by `section()`. Future sections are not shown, so empty
   section wrappers no longer draw a stack of divider lines. There is no
   `border-top` between sections.
