@@ -31,15 +31,21 @@ and reveal the talk one step at a time in a browser. No separate slide deck.
 </p>
 
 ```bash
-python -m pip install -e 'producer[live]'
+python -m pip install 'traceviewer[live] @ https://github.com/MANA-Y/traceviewer/releases/latest/download/traceviewer-py3-none-any.whl'
 traceviewer new my-talk
 cd my-talk
 traceviewer dev talk.py
 ```
 
-From a clone of this repository, build the viewer once (`npm run build`, or
-`./scripts/bootstrap.sh`) so `dev` can find it. A release wheel ships that
-build inside the package. The bundled example still runs from the repo root:
+That wheel includes the viewer. You do not need Node.js or a clone of this
+repository. Until a GitHub Release exists, install from a checkout after
+`npm run build` (or `./scripts/bootstrap.sh`):
+
+```bash
+python -m pip install -e 'producer[live]'
+```
+
+The bundled example still runs from the repo root:
 
 ```bash
 traceviewer dev presentations.example

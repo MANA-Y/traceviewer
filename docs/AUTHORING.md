@@ -4,8 +4,14 @@ A TraceViewer presentation is a Python module. The producer runs `main()`,
 records each helper call as a playback step, and shows those steps in the
 browser. You do not maintain a separate slide deck.
 
-This guide assumes the toolchain is installed. A release wheel includes the
-viewer. If you unpacked this source tree, start with [BUILD.md](BUILD.md).
+This guide assumes the toolchain is installed. A GitHub Release wheel includes
+the viewer:
+
+```bash
+python -m pip install 'traceviewer[live] @ https://github.com/MANA-Y/traceviewer/releases/latest/download/traceviewer-py3-none-any.whl'
+```
+
+If you unpacked this source tree, start with [BUILD.md](BUILD.md).
 
 The helper reference is
 [skills/traceviewer-authoring/references/authoring-api.md](../skills/traceviewer-authoring/references/authoring-api.md).

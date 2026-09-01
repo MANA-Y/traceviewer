@@ -5,8 +5,6 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from setuptools.command.build_py import build_py as _build_py
-
 
 SKIP_NAMES = {".DS_Store", "var"}
 VIEWER_GITIGNORE = "*\n!.gitignore\n"
@@ -14,17 +12,15 @@ VIEWER_GITIGNORE = "*\n!.gitignore\n"
 
 def _repo_viewer_dist() -> Path | None:
     """Return this repository's Vite ``dist/`` when the layout is recognizable."""
-    try:
-        repo = Path(__file__).resolve().parents[3]
-    except IndexError:
-        return None
-    dist = repo / "dist"
-    if (
-        (dist / "index.html").is_file()
-        and (repo / "package.json").is_file()
-        and (repo / "producer").is_dir()
-    ):
-        return dist
+    here = Path(__file__).resolve().parent
+    for repo in (here, *here.parents):
+        dist = repo / "dist"
+        if (
+            (dist / "index.html").is_file()
+            and (repo / "package.json").is_file()
+            and (repo / "producer").is_dir()
+        ):
+            return dist
     return None
 
 
@@ -55,7 +51,14 @@ def sync_viewer_assets() -> Path | None:
     return destination
 
 
-class build_py(_build_py):
-    def run(self) -> None:
-        sync_viewer_assets()
-        super().run()
+def __getattr__(name: str):
+    if name != "build_py":
+        raise AttributeError(name)
+    from setuptools.command.build_py import build_py as _build_py
+
+    class build_py(_build_py):
+        def run(self) -> None:
+            sync_viewer_assets()
+            super().run()
+
+    return build_py

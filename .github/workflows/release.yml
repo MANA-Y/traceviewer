@@ -1,0 +1,85 @@
+name: Release wheel
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: npm ci
+      - run: npm run build
+      - run: python -m unittest discover -s producer/tests -p "test_*.py"
+      - run: python -m pip install build
+      - name: Build the wheel with the viewer inside
+        run: |
+          PYTHONPATH=producer/src python -c "from traceviewer._build import sync_viewer_assets; print(sync_viewer_assets())"
+          python -m build producer
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+
+          wheels = list(Path("producer/dist").glob("traceviewer-*-py3-none-any.whl"))
+          if len(wheels) != 1:
+              raise SystemExit(f"expected one wheel, found {wheels}")
+          names = zipfile.ZipFile(wheels[0]).namelist()
+          if "traceviewer/viewer/index.html" not in names:
+              raise SystemExit("wheel is missing the packaged viewer")
+          if any(name.startswith("traceviewer/viewer/var/") for name in names):
+              raise SystemExit("wheel must not ship example traces")
+          print(f"wheel={wheels[0]} files={len(names)}")
+          PY
+      - name: Smoke an isolated install
+        run: |
+          python -m venv .venv-wheel
+          wheel=$(ls producer/dist/traceviewer-*-py3-none-any.whl)
+          .venv-wheel/bin/python -m pip install "${wheel}[live]"
+          work=$(mktemp -d)
+          .venv-wheel/bin/traceviewer new smoke --directory "$work"
+          .venv-wheel/bin/traceviewer validate "$work/smoke/talk.py"
+          .venv-wheel/bin/traceviewer pack "$work/smoke/talk.py" --output "$work/packed"
+          test -f "$work/packed/index.html"
+          test -f "$work/packed/trace.json"
+          .venv-wheel/bin/traceviewer doctor
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-package
+          path: producer/dist/*
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          stable="producer/dist/traceviewer-py3-none-any.whl"
+          cp producer/dist/traceviewer-*-py3-none-any.whl "$stable"
+          gh release create "$GITHUB_REF_NAME" \
+            producer/dist/traceviewer-*-py3-none-any.whl \
+            producer/dist/traceviewer-*.tar.gz \
+            "$stable" \
+            --title "$GITHUB_REF_NAME" \
+            --notes "$(cat <<EOF
+          Code-first slides. The wheel includes the viewer; authors do not need Node.js.
+
+          \`\`\`bash
+          python -m pip install 'traceviewer[live] @ https://github.com/MANA-Y/traceviewer/releases/download/${GITHUB_REF_NAME}/traceviewer-${version}-py3-none-any.whl'
+          traceviewer new my-talk
+          cd my-talk
+          traceviewer dev talk.py
+          \`\`\`
+          EOF
+          )"

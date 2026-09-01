@@ -178,6 +178,28 @@ compiled playback exceeds a provisional 200 MB heap budget.
 Pushes to `main` deploy the production viewer and bundled example to
 [GitHub Pages](https://mana-y.github.io/traceviewer/).
 
+## Release wheel
+
+Tag a version that matches `producer/pyproject.toml` and push the tag. The
+[Release wheel](../.github/workflows/release.yml) workflow builds the viewer,
+copies it into the package, packs `traceviewer-*-py3-none-any.whl`, smokes
+`new` / `validate` / `pack` in a clean venv, and attaches the wheel to the
+GitHub Release.
+
+```bash
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+Authors then install without Node:
+
+```bash
+python -m pip install 'traceviewer[live] @ https://github.com/MANA-Y/traceviewer/releases/latest/download/traceviewer-py3-none-any.whl'
+```
+
+Do not publish that name to PyPI until the public brand is settled. GitHub
+Releases are enough for the first speakers.
+
 ## Common failures
 
 | Symptom | Fix |

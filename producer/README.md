@@ -16,8 +16,9 @@ python -m pip install -e '.[live]'
 ```
 
 The path form `pip install -e 'producer[live]'` from the repo root is the
-same package. A release wheel is named `traceviewer` and includes the viewer
-build; authors then do not need Node.js.
+same package. A GitHub Release wheel is named `traceviewer` and includes the
+viewer; authors then do not need Node.js. Tag `v*` to build it. Do not
+publish that name to PyPI until the public brand is settled.
 
 Add the `binary` extra only when building the standalone CLI.
 

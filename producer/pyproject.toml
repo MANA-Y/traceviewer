@@ -11,6 +11,11 @@ license = { text = "MIT" }
 requires-python = ">=3.11"
 dependencies = []
 
+[project.urls]
+Homepage = "https://mana-y.github.io/traceviewer/"
+Repository = "https://github.com/MANA-Y/traceviewer"
+Issues = "https://github.com/MANA-Y/traceviewer/issues"
+
 [project.optional-dependencies]
 live = ["websockets>=12,<14"]
 binary = ["pyinstaller>=6.10,<7"]
